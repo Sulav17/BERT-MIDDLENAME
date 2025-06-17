@@ -1,0 +1,30 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Build Docker image
+        run: docker build -t bert-middle-name:ci .
+
+      - name: Run Docker container
+        run: |
+          docker run -d -p 8001:8000 --name test bert-middle-name:ci
+          timeout 60 sh -c 'until curl --silent http://localhost:8001/; do sleep 5; done'
+
+      - name: Test root endpoint
+        run: curl --fail http://localhost:8001/
+
+      - name: Cleanup
+        run: |
+          docker stop test
+          docker rm test

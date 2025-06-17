@@ -1,0 +1,31 @@
+# Git and VCS
+.git
+.github
+.gitignore
+
+# Python cache and virtual environments
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.env
+
+# Logs, models, and local data
+local-bert/
+*.log
+
+# OS and editor files
+.DS_Store
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Test and coverage files
+.coverage
+htmlcov/
+*.pytest_cache/
+  
+# Project files to exclude
+LICENSE
+README.md
