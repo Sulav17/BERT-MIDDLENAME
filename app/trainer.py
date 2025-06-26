@@ -37,14 +37,24 @@ def train_model():
     print("Loading dataset...")
     dataset = load_dataset("json", data_files={
         "train": "data/train.json",
-        "validation": "data/validate.json"
+        "validation": "data/valid.json"
     })
     print("Dataset loaded.")
+    # Filter out examples with labels not in our label map
+    print("Filtering dataset to known middle-name labels...")
+    dataset = dataset.filter(lambda example: example["middle_name"] in middle_name_to_id)
+    # Show new dataset sizes
+    train_count = dataset["train"].num_rows if hasattr(dataset["train"], 'num_rows') else len(dataset["train"])
+    valid_count = dataset["validation"].num_rows if hasattr(dataset["validation"], 'num_rows') else len(dataset["validation"])
+    print(f"Filtered dataset sizes: train={train_count}, validation={valid_count}")
 
     print("Preprocessing dataset...")
     dataset = dataset.map(preprocess)
     print("Dataset preprocessed.")
 
+    # Determine if CUDA is available and configure accordingly
+    use_cuda = torch.cuda.is_available()
+    print(f"CUDA available: {use_cuda}. Training on {'GPU' if use_cuda else 'CPU'}.")
     training_args = TrainingArguments(
         output_dir="./models/bert-middle-name",
         per_device_train_batch_size=8,
@@ -52,7 +62,7 @@ def train_model():
         num_train_epochs=5,
         logging_dir="./logs",
         logging_steps=10,
-        no_cuda=True,  # Force training on CPU
+        no_cuda=not use_cuda,
     )
 
     trainer = Trainer(

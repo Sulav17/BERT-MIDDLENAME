@@ -11,4 +11,8 @@ def root():
 @app.post("/predict-middle-name", response_model=MiddleNameResponse)
 def get_middle_name(data: FullNameRequest):
     middle = predict_middle_name(data.full_name)
-    return {"middle_name": middle}
+    return {
+        "full_name": data.full_name,
+        "middle_name": middle
+    }
+

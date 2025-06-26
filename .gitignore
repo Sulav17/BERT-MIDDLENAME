@@ -10,3 +10,5 @@ models/
 .DS_Store
 .vscode/
 .idea/
+#data files .json
+*.json
